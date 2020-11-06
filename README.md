@@ -1,6 +1,6 @@
-# app
+# Virtual-Card-App-Using-Flutter
 
-A new Flutter application.
+Virtual Card app helps you store your credit/debit card information virtually on your device so that you can access it anytime in QR code format. This is my first app built using flutter framework.
 
 ## Getting Started
 
