@@ -9,26 +9,7 @@ import 'strings.dart';
 import 'package:app/readwrite.dart';
 import 'settings.dart';
 
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//         title: Strings.appBarTitle,
-//         theme: ThemeData(
-//           primarySwatch: Colors.blue,
-//         ),
-//         home: Scaffold(
-//             appBar: AppBar(
-//               title: Text(Strings.appBarTitle),
-//             ),
-//             body: Home(
-//                 //storage: Storage(),
-//                 )));
-//   }
-// }
-
 class Home extends StatefulWidget {
-  // final Storage storage;
   final bool isLocked;
   final String pin;
 
@@ -41,7 +22,6 @@ class _HomeState extends State<Home> {
   Storage storage = Storage();
   List<Cards> cards = [];
   List<Cards> card;
-  Future<Directory> _appDocDir;
   bool isAuthenticated = false;
   bool isLocked;
   String pin;
@@ -51,8 +31,7 @@ class _HomeState extends State<Home> {
     super.initState();
     isLocked = widget.isLocked;
     pin = widget.pin;
-    //Future<List<Cards>> cards;
-    this.storage.readData().then((card) {
+    this.storage.readData().then((var card) {
       setState(() {
         this.cards = card;
       });
@@ -131,8 +110,8 @@ class _HomeState extends State<Home> {
               ));
   }
 
-  openSetting() async {
-    var data = await Navigator.of(context).push(MaterialPageRoute(
+  void openSetting() async {
+    await Navigator.of(context).push(MaterialPageRoute(
         builder: (context) =>
             SettingsPage(isLocked: this.isLocked, pin: this.pin)));
     setState(() {
@@ -149,17 +128,15 @@ class _HomeState extends State<Home> {
         ));
 
     // after the SecondScreen result comes back update the screen with new card
-    setState(() {
-      cards.add(new Cards(result[0], result[1], result[2], result[3]));
-      writeData();
-    });
+    if (result != null) {
+      setState(() {
+        cards.add(new Cards(result[0], result[1], result[2], result[3]));
+        writeData();
+      });
+    }
   }
 
   Future<File> writeData() async {
-    // setState(() {
-    //   cards = this.cards;
-    // });
-    //cards = this.cards;
     return this.storage.writeData(this.cards);
   }
 }

@@ -15,20 +15,24 @@ class _SplashState extends State<Splash> {
   void initState() {
     super.initState();
     getData();
+    if (this.isLocked == null) {
+      isLocked = false;
+    }
   }
 
   Future<void> getData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    bool isLocked = pref.getBool('isLocked') ?? false;
+    bool isLocked =
+        pref.getBool('isLocked') == null ? false : pref.getBool('isLocked');
     String pin = pref.getString('pin') ?? '';
-    setState(() {
-      this.isLocked = isLocked;
-      this.pin = pin;
-    });
+    this.pin = pin;
+    this.isLocked = isLocked;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    print(this.pin);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashScreen(
@@ -40,7 +44,6 @@ class _SplashState extends State<Splash> {
   }
 
   Widget nextcreen() {
-    setState(() {});
     return isLocked
         ? LockScreen(isLocked: this.isLocked, pin: this.pin)
         : Home(

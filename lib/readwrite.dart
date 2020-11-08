@@ -15,10 +15,10 @@ class Storage {
   }
 
   Future<List<Cards>> readData() async {
+    List<Cards> cards = [];
     try {
       final file = await localFile;
       List<String> body = await file.readAsLines();
-      List<Cards> cards = [];
 
       for (String b in body) {
         List l = b.split('&');
@@ -27,13 +27,15 @@ class Storage {
       }
       return cards;
     } catch (e) {
-      return e;
+      return cards;
     }
   }
 
   Future<File> writeData(List<Cards> list) async {
     final file = await localFile;
-    file.delete();
+    if (file == null) {
+      file.delete();
+    }
     String data = '';
     for (Cards item in list) {
       data = data +

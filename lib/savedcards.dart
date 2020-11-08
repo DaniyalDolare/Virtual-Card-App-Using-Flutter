@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/rendering.dart';
-
 import 'readwrite.dart';
 import 'package:flutter/material.dart';
 import 'cards.dart';
@@ -11,7 +10,6 @@ class SavedCards extends StatefulWidget {
   final Storage storage;
   SavedCards({Key key, @required this.storage, this.listItems})
       : super(key: key);
-  //SavedCards(this.listItems);
 
   @override
   _SavedCardsState createState() => _SavedCardsState();
@@ -48,8 +46,6 @@ class _SavedCardsState extends State<SavedCards> {
               ),
               onTap: () {
                 _awaitReturnValueFromQRCode(context, card);
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => QRCode(data: card)));
               },
             ),
           ),
@@ -59,20 +55,17 @@ class _SavedCardsState extends State<SavedCards> {
   }
 
   void _awaitReturnValueFromQRCode(BuildContext context, card) async {
-    // start the SecondScreen and wait for it to finish with a result
     final bool result = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => QRCode(data: card),
         ));
 
-    // after the SecondScreen result comes back update the Text widget with it
     setState(() {
-      if (result) {
+      if (result == true) {
         this.widget.listItems.remove(card);
         writeData();
       }
-      //cards.add(new Cards(result[0], result[1], result[2], result[3]));
     });
   }
 
