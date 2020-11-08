@@ -32,7 +32,6 @@ class _SplashState extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
-    print(this.pin);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashScreen(
