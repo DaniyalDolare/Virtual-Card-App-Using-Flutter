@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:app/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +12,7 @@ class LockScreen extends StatefulWidget {
 
 class _LockScreenState extends State<LockScreen> {
   List enteredPin = [];
+  bool visible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class _LockScreenState extends State<LockScreen> {
     );
   }
 
-  _buildPortraitLockScreen() => Column(
+  Widget _buildPortraitLockScreen() => Column(
         children: [
           Expanded(
             child: Align(
@@ -98,7 +98,7 @@ class _LockScreenState extends State<LockScreen> {
         ],
       );
 
-  _buildLandscapeLockScreen() => Row(
+  Widget _buildLandscapeLockScreen() => Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Column(
@@ -173,14 +173,19 @@ class _LockScreenState extends State<LockScreen> {
       );
 
   Widget buildCirle(bool fill) {
-    return Container(
-        margin: EdgeInsets.all(4),
-        width: 20,
-        height: 20,
-        decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: fill ? Colors.white : Colors.transparent,
-            border: Border.all(color: Colors.white, width: 1)));
+    return AnimatedSwitcher(
+      duration: Duration(milliseconds: 100),
+      child: visible
+          ? Container(
+              margin: EdgeInsets.all(4),
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: fill ? Colors.white : Colors.transparent,
+                  border: Border.all(color: Colors.white, width: 1)))
+          : SizedBox(),
+    );
   }
 
   Widget buildKeyboardDigit(String text) {
@@ -213,13 +218,10 @@ class _LockScreenState extends State<LockScreen> {
     );
   }
 
-  getNumPressed(String text) {
+  void getNumPressed(String text) {
     enteredPin.add(text);
     setState(() {
-      print('${enteredPin.join()},${this.widget.pin}');
-
       if (enteredPin.join() == this.widget.pin) {
-        print('yes');
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -228,17 +230,21 @@ class _LockScreenState extends State<LockScreen> {
       }
     });
     if (enteredPin.length == 4) {
+      visible = false;
       refresh();
     }
   }
 
-  refresh() {
-    sleep(Duration(milliseconds: 150));
+  void refresh() {
     enteredPin = [];
-    setState(() {});
+    Future.delayed(Duration(milliseconds: 100)).then((_) {
+      setState(() {
+        visible = true;
+      });
+    });
   }
 
-  deleteNum(String value) {
+  void deleteNum(String value) {
     if (value == 'Delete') {
       enteredPin.removeLast();
       setState(() {});
