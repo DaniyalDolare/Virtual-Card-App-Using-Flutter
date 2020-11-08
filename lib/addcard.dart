@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'strings.dart';
-//import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 
 class AddCard extends StatefulWidget {
   @override
@@ -9,25 +7,84 @@ class AddCard extends StatefulWidget {
 }
 
 class _AddCardState extends State<AddCard> {
-  final nameController = TextEditingController();
-  final numberController = TextEditingController();
-  final dateController = TextEditingController();
-  final cvvController = TextEditingController();
+  String selectedMonth = '  ';
+  String selectedYear = '  ';
+  TextEditingController nameController = TextEditingController();
+  TextEditingController numberController = TextEditingController();
+  TextEditingController dateController;
+  TextEditingController cvvController = TextEditingController();
 
-  DateTime selectedDate = DateTime.now();
+  @override
+  void initState() {
+    super.initState();
+    dateController =
+        TextEditingController(text: selectedMonth + '/' + selectedYear);
+  }
 
-  Future<Null> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2100),
+  Widget selectDate() {
+    List<Widget> months = [];
+    List<Widget> years = [];
+    for (int i = 1; i <= 12; i++) {
+      String month = i < 10 ? '0' + i.toString() : i.toString();
+      months.add(Text(month));
+    }
+    for (int i = 0; i <= 99; i++) {
+      String year = i < 10 ? '0' + i.toString() : i.toString();
+      years.add(Text(year));
+    }
+
+    return Container(
+      padding: EdgeInsets.all(5),
+      child: Column(children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+              "Month",
+              style: TextStyle(fontSize: 20),
+            ),
+            Text(
+              "Year",
+              style: TextStyle(fontSize: 20),
+            )
+          ],
+        ),
+        Expanded(
+          child: Row(
+            children: [
+              Expanded(
+                child: CupertinoPicker(
+                  children: months,
+                  magnification: 1.0,
+                  itemExtent: 30,
+                  onSelectedItemChanged: (value) {
+                    selectedMonth =
+                        value < 10 ? '0' + value.toString() : value.toString();
+                  },
+                ),
+              ),
+              Expanded(
+                child: CupertinoPicker(
+                  children: years,
+                  magnification: 1.0,
+                  itemExtent: 30,
+                  onSelectedItemChanged: (value) {
+                    selectedYear =
+                        value < 10 ? '0' + value.toString() : value.toString();
+                  },
+                ),
+              )
+            ],
+          ),
+        ),
+        FlatButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {});
+            },
+            child: Text("Select"))
+      ]),
     );
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-        dateController.value = TextEditingValue(text: picked.toString());
-      });
   }
 
   @override
@@ -85,6 +142,21 @@ class _AddCardState extends State<AddCard> {
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
+                  onTap: () async {
+                    await showModalBottomSheet(
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15))),
+                        context: context,
+                        builder: (context) {
+                          return selectDate();
+                        });
+
+                    setState(() {
+                      dateController.value = TextEditingValue(
+                          text: selectedMonth + "/" + selectedYear);
+                    });
+                  },
                   controller: dateController,
                   decoration:
                       new InputDecoration(hintText: "Enter expiry date(mm/yy)"),
@@ -119,7 +191,6 @@ class _AddCardState extends State<AddCard> {
                                     : (cvvController.text.length < 3)
                                         ? "CVV must be of 3 digits"
                                         : "All feilds must be properly filled!"),
-                                //Text("All fields must be filled properly"),
                                 actions: [
                                   FlatButton(
                                     child: Text("OK"),
